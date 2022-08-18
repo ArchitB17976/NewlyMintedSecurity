@@ -1,6 +1,6 @@
 package com.locker.user;
 
-public class User 
+public class UserEntity 
 {
     private final long id;
     private final String name;
@@ -15,7 +15,7 @@ public class User
         return name;
     }
 
-    public User(long id, String name) 
+    public UserEntity(long id, String name) 
     {
         this.id = id;
         this.name = name;

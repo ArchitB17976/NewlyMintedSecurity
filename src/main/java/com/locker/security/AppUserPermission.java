@@ -2,8 +2,8 @@ package com.locker.security;
 
 public enum AppUserPermission 
 {
-    STUDENT_READ("student:read"),
-    STUDENT_WRITE("student:write"),
+    USER_READ("user:read"),
+    USER_WRITE("user:write"),
     COURSE_READ("course:read"),
     COURSE_WRITE("course:write");
     

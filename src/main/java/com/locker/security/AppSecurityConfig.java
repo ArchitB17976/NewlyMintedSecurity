@@ -3,7 +3,6 @@ package com.locker.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -43,6 +42,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .httpBasic(); // Using basic HTTP for enforcement
     }
     
+    // Creating one user instance
     @Override
     @Bean
     protected UserDetailsService userDetailsService() 
@@ -52,6 +52,12 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
                                         .password(encode.encode("pass"))
                                         .roles("NORMAL_USER")
                                         .build();
+        
+        User.builder()
+                    .username("Kirk")
+                    .password("newPass")
+                    .roles("ADMIN")
+                    .build();
         return new InMemoryUserDetailsManager(anna);
     }
 }

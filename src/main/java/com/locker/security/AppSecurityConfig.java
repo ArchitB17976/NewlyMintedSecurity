@@ -30,11 +30,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
     {
         http
             .authorizeRequests() // Provide ability to authorize requests
-            .antMatchers(
-                "/", "index", 
-                "/css/*", "/js/*"
-            ) // Whitelisting listed pages
-            .permitAll()
+            
+            // Whitelisting listed pages for everyone
+            .antMatchers("/", "index","/css/*", "/js/*").permitAll() 
+            
+            // Whitelisting URL endpoints under "api" for normal users
+            .antMatchers("/api/**").hasRole(NORMAL_USER.name())
+            
             .anyRequest() // Counts for any requests
             .authenticated() // Must be authenticated
             .and()

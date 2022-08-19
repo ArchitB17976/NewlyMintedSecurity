@@ -7,8 +7,9 @@ import static com.locker.security.AppUserPermission.*;
 
 public enum AppUserRole 
 {
-    NORMAL_USER(Sets.newHashSet(
-        COURSE_READ, USER_READ, USER_WRITE
+    NORMAL_USER(Sets.newHashSet()),
+    ADMIN_TRAINEE(Sets.newHashSet(
+        COURSE_READ, USER_READ
     )),
     ADMIN(Sets.newHashSet(
         COURSE_READ, COURSE_WRITE,

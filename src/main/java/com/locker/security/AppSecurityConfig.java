@@ -2,9 +2,9 @@ package com.locker.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -13,7 +13,7 @@ import static com.locker.security.AppUserRole.*;
 
 @Configuration
 @EnableWebSecurity
-
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter
 {
     private final PasswordEncoder encode;
@@ -28,7 +28,10 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) 
         throws Exception 
     {
+        String mgmtAPI = "/management/api/**";
+
         http
+            // .csrf().disable()
             .authorizeRequests() // Provide ability to authorize requests
             
             // Whitelisting listed pages for everyone
@@ -37,6 +40,17 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             // Whitelisting URL endpoints under "api" for normal users
             .antMatchers("/api/**").hasRole(NORMAL_USER.name())
             
+            // // Setting COURSE_WRITE authorisation for POST/PUT/DEL
+            // .antMatchers(HttpMethod.POST, mgmtAPI)
+            // .hasAuthority(COURSE_WRITE.getPermission())
+            // .antMatchers(HttpMethod.PUT, mgmtAPI)
+            // .hasAuthority(COURSE_WRITE.getPermission())
+            // .antMatchers(HttpMethod.DELETE, mgmtAPI)
+            // .hasAuthority(COURSE_WRITE.getPermission())
+            
+            // // Setting Course_READ authorisation for ADMIN and ADMIN_TRAINEE
+            // .antMatchers(HttpMethod.GET, mgmtAPI)
+            // .hasAnyRole(ADMIN.name(), ADMIN_TRAINEE.name())
             .anyRequest() // Counts for any requests
             .authenticated() // Must be authenticated
             .and()
@@ -51,19 +65,24 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
         UserDetails anna = User.builder()
                                         .username("brie")
                                         .password(encode.encode("pass"))
-                                        .roles(NORMAL_USER.name())
+                                        .roles(NORMAL_USER.name()) 
+                                        // ROLE_NORMAL_USER
+                                        .authorities(NORMAL_USER.getGrantedAuths())
                                         .build();
         
         UserDetails kirk = User.builder()
                                         .username("kirk")
                                         .password(encode.encode("pass123"))
-                                        .roles(ADMIN.name())
+                                        .roles(ADMIN.name()) // ROLE_ADMIN
+                                        .authorities(ADMIN.getGrantedAuths())
                                         .build();
        
         UserDetails derek = User.builder()
                                         .username("derek")
                                         .password(encode.encode("pass456"))
                                         .roles(ADMIN_TRAINEE.name())
+                                        // ROLE_ADMIN_TRAINEE
+                                        .authorities(ADMIN_TRAINEE.getGrantedAuths())
                                         .build();
 
         return new InMemoryUserDetailsManager(anna, kirk, derek);

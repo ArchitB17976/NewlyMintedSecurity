@@ -1,6 +1,8 @@
 package com.locker.user;
 
 import java.util.*;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,25 +15,30 @@ public class UserMgmtControl
         new UserEntity(120002, "Kirk Lee")
     );
 
-    @PostMapping(path = "new")
+    @PostMapping
+    @PreAuthorize("hasAuthority('user:write')")
     public void registerNewUser(@RequestBody UserEntity user)
     {
         System.out.println(user);
     }
 
-    @GetMapping(path = "")
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN_TRAINEE')")
     public List<UserEntity> getUSERS() 
     {
         return USERS;
     }
 
     @PutMapping(path = "{userId}")
-    public void updateUser(long userId, UserEntity user)
+    @PreAuthorize("hasAuthority('user:write')")
+    public void updateUser
+        (@PathVariable long userId, @RequestBody UserEntity user)
     {
         System.out.println(String.format("%s %s", userId, user));
     }
 
     @DeleteMapping(path = "{userId}")
+    @PreAuthorize("hasAuthority('user:write')")
     public void deleteUser(@PathVariable(name = "userId") long userId)
     {
         System.out.println(userId);

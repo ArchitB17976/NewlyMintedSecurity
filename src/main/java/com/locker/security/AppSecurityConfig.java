@@ -28,7 +28,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) 
         throws Exception 
     {
-        String mgmtAPI = "/management/api/**";
+        // String mgmtAPI = "/management/api/**";
 
         http
             // .csrf().disable()

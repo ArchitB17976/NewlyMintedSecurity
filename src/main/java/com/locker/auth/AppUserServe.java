@@ -1,5 +1,6 @@
 package com.locker.auth;
 
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +9,8 @@ public class AppUserServe implements UserDetailsService
 {
     private final AppUserDAO dataObj;
 
-    public AppUserServe(AppUserDAO appDAO)
+    @Autowired
+    public AppUserServe(@Qualifier("Fake") AppUserDAO appDAO)
     {
         this.dataObj = appDAO;
     }

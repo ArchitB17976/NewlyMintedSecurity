@@ -43,7 +43,9 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .and()
             .formLogin()
             .loginPage("/login").permitAll()
-            .defaultSuccessUrl("/courses", true);
+            .defaultSuccessUrl("/courses", true)
+            .and()
+            .rememberMe(); // Defaults to 2 weeks of inactivity
     }
     
     // Creating one user instance

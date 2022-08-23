@@ -47,12 +47,17 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
                 .loginPage("/login")
                 .permitAll()
                 .defaultSuccessUrl("/courses", true)
+                /*  parameter argument must match the "name" of
+                 the input type in the html file */
+                .usernameParameter("user")
+                .passwordParameter("pass")
             .and()
             .rememberMe()
                 // Extends remember me time limit from default (2 weeks)
                 .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                 // Setting up the key to scramble the information in the cookie
                 .key("somethingveryverysecure")
+                .rememberMeParameter("rem-me")
             .and()
             .logout()
                 .logoutUrl("/logout")

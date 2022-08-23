@@ -41,7 +41,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .anyRequest() // Counts for any requests
             .authenticated() // Must be authenticated
             .and()
-            .httpBasic(); // Using basic HTTP for enforcement
+            .formLogin()
+            .loginPage("/login").permitAll();
     }
     
     // Creating one user instance

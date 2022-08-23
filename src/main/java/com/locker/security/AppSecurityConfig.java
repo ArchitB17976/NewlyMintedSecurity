@@ -29,6 +29,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
         throws Exception 
     {
         http
+            .csrf().disable()
             .authorizeRequests() // Provide ability to authorize requests
             
             // Whitelisting listed pages for everyone

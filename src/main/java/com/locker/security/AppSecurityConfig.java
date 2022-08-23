@@ -42,7 +42,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .authenticated() // Must be authenticated
             .and()
             .formLogin()
-            .loginPage("/login").permitAll();
+            .loginPage("/login").permitAll()
+            .defaultSuccessUrl("/courses", true);
     }
     
     // Creating one user instance

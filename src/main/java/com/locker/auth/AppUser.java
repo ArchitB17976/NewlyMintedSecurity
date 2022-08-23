@@ -1,21 +1,20 @@
 package com.locker.auth;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class AppUser implements UserDetails
 {
-    private final List<? extends GrantedAuthority> grantedAuths;
+    private final Set<? extends GrantedAuthority> grantedAuths;
     private final String username, password;
     private final boolean 
         isAccountNonExpired, isAccountNonLocked, 
         isCredentialsNonExpired, isEnabled;
     
     public AppUser(
-        List<? extends GrantedAuthority> grantedAuths, 
+        Set<? extends GrantedAuthority> grantedAuths, 
         String username, 
         String password,
         boolean isAccountNonExpired, 

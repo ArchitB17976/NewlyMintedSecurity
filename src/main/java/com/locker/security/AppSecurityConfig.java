@@ -11,6 +11,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import static com.locker.security.AppUserRole.*;
 
+import java.util.concurrent.TimeUnit;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -45,7 +47,11 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .loginPage("/login").permitAll()
             .defaultSuccessUrl("/courses", true)
             .and()
-            .rememberMe(); // Defaults to 2 weeks of inactivity
+            .rememberMe()
+                // Extends remember me time limit from default (2 weeks)
+                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
+                // Setting up the key to scramble the information in the cookie
+                .key("somethingveryverysecure");
     }
     
     // Creating one user instance

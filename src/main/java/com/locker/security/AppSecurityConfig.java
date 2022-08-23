@@ -28,10 +28,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) 
         throws Exception 
     {
-        // String mgmtAPI = "/management/api/**";
-
         http
-            // .csrf().disable()
+            .csrf().disable()
             .authorizeRequests() // Provide ability to authorize requests
             
             // Whitelisting listed pages for everyone
@@ -40,17 +38,6 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             // Whitelisting URL endpoints under "api" for normal users
             .antMatchers("/api/**").hasRole(NORMAL_USER.name())
             
-            // // Setting COURSE_WRITE authorisation for POST/PUT/DEL
-            // .antMatchers(HttpMethod.POST, mgmtAPI)
-            // .hasAuthority(COURSE_WRITE.getPermission())
-            // .antMatchers(HttpMethod.PUT, mgmtAPI)
-            // .hasAuthority(COURSE_WRITE.getPermission())
-            // .antMatchers(HttpMethod.DELETE, mgmtAPI)
-            // .hasAuthority(COURSE_WRITE.getPermission())
-            
-            // // Setting Course_READ authorisation for ADMIN and ADMIN_TRAINEE
-            // .antMatchers(HttpMethod.GET, mgmtAPI)
-            // .hasAnyRole(ADMIN.name(), ADMIN_TRAINEE.name())
             .anyRequest() // Counts for any requests
             .authenticated() // Must be authenticated
             .and()

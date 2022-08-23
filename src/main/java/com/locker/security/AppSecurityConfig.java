@@ -51,7 +51,14 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
                 // Extends remember me time limit from default (2 weeks)
                 .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                 // Setting up the key to scramble the information in the cookie
-                .key("somethingveryverysecure");
+                .key("somethingveryverysecure")
+            .and()
+            .logout()
+                .logoutUrl("/logout")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID", "remember-me")
+                .logoutSuccessUrl("/login");
     }
     
     // Creating one user instance

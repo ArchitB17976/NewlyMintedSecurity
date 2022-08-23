@@ -44,8 +44,9 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .authenticated() // Must be authenticated
             .and()
             .formLogin()
-            .loginPage("/login").permitAll()
-            .defaultSuccessUrl("/courses", true)
+                .loginPage("/login")
+                .permitAll()
+                .defaultSuccessUrl("/courses", true)
             .and()
             .rememberMe()
                 // Extends remember me time limit from default (2 weeks)

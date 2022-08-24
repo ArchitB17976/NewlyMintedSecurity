@@ -2,12 +2,14 @@ package com.locker.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
-import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+import com.locker.auth.AppUserServe;
 
 import static com.locker.security.AppUserRole.*;
 
@@ -19,11 +21,13 @@ import java.util.concurrent.TimeUnit;
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter
 {
     private final PasswordEncoder encode;
+    private final AppUserServe serve;
 
     @Autowired
-    public AppSecurityConfig(PasswordEncoder encodes)
+    public AppSecurityConfig(PasswordEncoder encodes, AppUserServe serves)
     {
         this.encode = encodes;
+        this.serve = serves;
     }
     
     @Override
@@ -67,34 +71,21 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
                 .logoutSuccessUrl("/login");
     }
     
-    // Creating one user instance
-    @Override
+    // Provides user instances
     @Bean
-    protected UserDetailsService userDetailsService() 
+    public DaoAuthenticationProvider provideDAOAuth()
     {
-        UserDetails anna = User.builder()
-                                        .username("brie")
-                                        .password(encode.encode("pass"))
-                                        .roles(NORMAL_USER.name()) 
-                                        // ROLE_NORMAL_USER
-                                        .authorities(NORMAL_USER.getGrantedAuths())
-                                        .build();
-        
-        UserDetails kirk = User.builder()
-                                        .username("kirk")
-                                        .password(encode.encode("pass123"))
-                                        .roles(ADMIN.name()) // ROLE_ADMIN
-                                        .authorities(ADMIN.getGrantedAuths())
-                                        .build();
-       
-        UserDetails derek = User.builder()
-                                        .username("derek")
-                                        .password(encode.encode("pass456"))
-                                        .roles(ADMIN_TRAINEE.name())
-                                        // ROLE_ADMIN_TRAINEE
-                                        .authorities(ADMIN_TRAINEE.getGrantedAuths())
-                                        .build();
+        DaoAuthenticationProvider provides = new DaoAuthenticationProvider();
+        provides.setPasswordEncoder(encode);
+        provides.setUserDetailsService(serve);
+        return provides;
+    }
 
-        return new InMemoryUserDetailsManager(anna, kirk, derek);
+    // Wires things up
+    @Override
+    public void configure(AuthenticationManagerBuilder auth)
+        throws Exception
+    {
+        auth.authenticationProvider(provideDAOAuth());
     }
 }

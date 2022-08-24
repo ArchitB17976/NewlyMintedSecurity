@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.locker.auth.AppUserServe;
 import com.locker.jwt.JwtCredAuthFilter;
+import com.locker.jwt.TokenVerifier;
 
 import static com.locker.security.AppUserRole.*;
 
@@ -41,7 +42,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
+            // Adding first filter
             .addFilter(new JwtCredAuthFilter(authenticationManager()))
+
+            /* Adding second filter (addFilterAfter specifies that this
+            filter goes right after the previous filter)*/
+            .addFilterAfter(new TokenVerifier(), JwtCredAuthFilter.class)
+            
             .authorizeRequests() // Provide ability to authorize requests
             
             // Whitelisting listed pages for everyone

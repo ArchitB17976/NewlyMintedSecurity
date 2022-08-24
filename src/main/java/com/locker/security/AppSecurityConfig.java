@@ -7,9 +7,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.locker.auth.AppUserServe;
+import com.locker.jwt.JwtCredAuthFilter;
 
 import static com.locker.security.AppUserRole.*;
 
@@ -36,6 +38,10 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
     {
         http
             .csrf().disable()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .addFilter(new JwtCredAuthFilter(authenticationManager()))
             .authorizeRequests() // Provide ability to authorize requests
             
             // Whitelisting listed pages for everyone
@@ -45,30 +51,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
             .antMatchers("/api/**").hasRole(NORMAL_USER.name())
             
             .anyRequest() // Counts for any requests
-            .authenticated() // Must be authenticated
-            .and()
-            .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .defaultSuccessUrl("/courses", true)
-                /*  parameter argument must match the "name" of
-                 the input type in the html file */
-                .usernameParameter("user")
-                .passwordParameter("pass")
-            .and()
-            .rememberMe()
-                // Extends remember me time limit from default (2 weeks)
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-                // Setting up the key to scramble the information in the cookie
-                .key("somethingveryverysecure")
-                .rememberMeParameter("rem-me")
-            .and()
-            .logout()
-                .logoutUrl("/logout")
-                .clearAuthentication(true)
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "remember-me")
-                .logoutSuccessUrl("/login");
+            .authenticated(); // Must be authenticated
     }
     
     // Provides user instances

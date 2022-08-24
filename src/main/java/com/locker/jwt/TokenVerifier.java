@@ -16,10 +16,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.google.common.base.Strings;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
 
 public class TokenVerifier extends OncePerRequestFilter
 {
+    private final JwtSecretKey secret;
+    private final JwtConfig config;
+    
+    
+    public TokenVerifier(JwtSecretKey secret, JwtConfig config) 
+    {
+        this.secret = secret;
+        this.config = config;
+    }
+
     @Override
     protected void doFilterInternal(
         HttpServletRequest request, 
@@ -28,22 +37,21 @@ public class TokenVerifier extends OncePerRequestFilter
     ) 
     throws ServletException, IOException 
     {
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader(config.getAuthHeader());
         
         if(Strings.isNullOrEmpty(authHeader) || 
-            !authHeader.startsWith("Bearer "))
+            !authHeader.startsWith(config.getTokenPrefix()))
         {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.replace("Bearer ", "");
+        String token = authHeader.replace(config.getTokenPrefix(), "");
 
         try
         {
-            String key = "AsEdFrTg7YhAsEdFrTg7YdFrTg7Yh994448559494855dSDFsdffsq";
             Jws<Claims> claimsJws = Jwts.parser()
-                    .setSigningKey(Keys.hmacShaKeyFor(key.getBytes()))
+                    .setSigningKey(secret.secretKey())
                     .parseClaimsJws(token);
             
             Claims body = claimsJws.getBody();

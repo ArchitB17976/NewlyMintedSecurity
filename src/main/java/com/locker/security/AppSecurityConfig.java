@@ -11,12 +11,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.locker.auth.AppUserServe;
-import com.locker.jwt.JwtCredAuthFilter;
-import com.locker.jwt.TokenVerifier;
+import com.locker.jwt.*;
 
 import static com.locker.security.AppUserRole.*;
-
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSecurity
@@ -25,12 +22,21 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
 {
     private final PasswordEncoder encode;
     private final AppUserServe serve;
+    private final JwtSecretKey secret;
+    private final JwtConfig config;
 
     @Autowired
-    public AppSecurityConfig(PasswordEncoder encodes, AppUserServe serves)
+    public AppSecurityConfig(
+        PasswordEncoder encodes, 
+        AppUserServe serves,
+        JwtSecretKey hides,
+        JwtConfig configures
+    )
     {
         this.encode = encodes;
         this.serve = serves;
+        this.secret = hides;
+        this.config = configures;
     }
     
     @Override
@@ -43,11 +49,13 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             // Adding first filter
-            .addFilter(new JwtCredAuthFilter(authenticationManager()))
+            .addFilter(new JwtCredAuthFilter(
+                authenticationManager(), config, secret
+            ))
 
             /* Adding second filter (addFilterAfter specifies that this
             filter goes right after the previous filter)*/
-            .addFilterAfter(new TokenVerifier(), JwtCredAuthFilter.class)
+            .addFilterAfter(new TokenVerifier(secret, config), JwtCredAuthFilter.class)
             
             .authorizeRequests() // Provide ability to authorize requests
             

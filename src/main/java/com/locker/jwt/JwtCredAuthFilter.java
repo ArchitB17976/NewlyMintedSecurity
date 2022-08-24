@@ -20,8 +20,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JwtCredAuthFilter extends UsernamePasswordAuthenticationFilter
 {
     private final AuthenticationManager manage;
+    private final JwtConfig config;
+    private final JwtSecretKey secretKey;
     
-    public JwtCredAuthFilter(AuthenticationManager auth) { this.manage = auth; }
+    public JwtCredAuthFilter(
+        AuthenticationManager auth,
+        JwtConfig figged,
+        JwtSecretKey sekrit
+    ) 
+    {
+        this.manage = auth;
+        this.config = figged;
+        this.secretKey = sekrit;
+    }
 
     @Override
     public Authentication attemptAuthentication(
@@ -56,7 +67,6 @@ public class JwtCredAuthFilter extends UsernamePasswordAuthenticationFilter
         Authentication authResult
     ) throws IOException, ServletException 
     {
-        String key = "AsEdFrTg7YhAsEdFrTg7YdFrTg7Yh994448559494855dSDFsdffsq";
         String token = 
             Jwts.builder()
                     .setSubject(authResult.getName())
@@ -67,9 +77,9 @@ public class JwtCredAuthFilter extends UsernamePasswordAuthenticationFilter
                             LocalDate.now().plusWeeks(2)
                         )
                     )
-                    .signWith(Keys.hmacShaKeyFor(key.getBytes()))
+                    .signWith(secretKey.secretKey())
                     .compact();
         
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader(config.getAuthHeader(), config.getTokenPrefix() + token);
     }
 }
